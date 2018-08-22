@@ -2,10 +2,6 @@
 
 require "spec_helper"
 
-# Add a STI-ish class on-the-fly
-class Management < Customer
-end
-
 RSpec.describe Management, type: :model, versioning: true do
   it { is_expected.to be_versioned }
 

@@ -139,11 +139,15 @@ module PaperTrail
     # is "Dog". If `attrs["species"]` is blank, `item_type` is "Animal". See
     # `spec/models/animal_spec.rb`.
     def setup_versions_association(klass)
-      klass.has_many(
+      has_manys = klass.has_many(
         klass.versions_association_name,
         lambda do
           order!(model.timestamp_sort_order)
-          unless klass.descendants.any? && klass.columns.exclude?(klass.inheritance_column)
+          # Unless it's not a subclassed model
+          unless klass.descendants.any? &&
+              # Or an STI devoid of an `inheritance_column`
+              klass.columns.exclude?(klass.inheritance_column)
+            # Search for Versions based on the real class name
             unscope(where: :item_type).where(item_type: klass.name)
           end
         end,
@@ -151,7 +155,22 @@ module PaperTrail
         as: :item
       )
 
-      # When STI models are created from a base class, override the otherwise-inherited
+      # Only for this .versions association override HasManyAssociation#collection?
+      # (that normally always returns true) so it returns false when referring to
+      # a subclassed model that uses STI.  Allows .create() events not to revert
+      # back to base_class at the final stages when Association#creation_attributes
+      # gets called.
+      unless klass.descends_from_active_record?
+        has_manys[klass.versions_association_name.to_s].define_singleton_method(:collection?) do
+          false
+        end
+      end
+
+      setup_versions_association_when_inheriting(klass)
+    end
+
+    def setup_versions_association_when_inheriting(klass)
+      # When STI models are created from another class, override the otherwise-inherited
       # has_many :versions so it will use the right `item_type`.
       klass.singleton_class.prepend(Module.new {
         def inherited(klass)
@@ -160,21 +179,6 @@ module PaperTrail
         end
       })
     end
-
-    # Allow .create() events not to revert back to base_class at the final stages when
-    # Association#creation_attributes gets called.  An override for this method from Rails:
-    # https://github.com/rails/rails/blob/v5.2.1/activerecord/lib/active_record/associations/association.rb#L198-L210
-    ActiveRecord::Associations::HasManyAssociation.prepend(Module.new {
-      def creation_attributes
-        if reflection.klass.name == "PaperTrail::Version" &&
-            owner.respond_to?(owner.class.inheritance_column)
-          # For STI records PaperTrail uses the real class name instead of the base_class.
-          { item_type: owner.class.name, item_id: owner[reflection.active_record_primary_key] }
-        else
-          super
-        end
-      end
-    })
 
     def setup_associations(options)
       @model_class.class_attribute :version_association_name

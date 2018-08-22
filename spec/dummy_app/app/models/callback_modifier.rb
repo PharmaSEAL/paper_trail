@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 class CallbackModifier < ActiveRecord::Base
-  # These guys need to look just a _little_ more like a real STI class in order for the tests to
-  # call modifier.versions().
-  attr_accessor :type
-
   has_paper_trail on: []
 
   def test_destroy
