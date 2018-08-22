@@ -142,14 +142,15 @@ module PaperTrail
       has_manys = klass.has_many(
         klass.versions_association_name,
         lambda do
-          order!(model.timestamp_sort_order)
+          relation = order(model.timestamp_sort_order)
           # Unless it's not a subclassed model
           unless klass.descendants.any? &&
               # Or an STI devoid of an `inheritance_column`
               klass.columns.exclude?(klass.inheritance_column)
             # Search for Versions based on the real class name
-            unscope(where: :item_type).where(item_type: klass.name)
+            relation = relation.unscope(where: :item_type).where(item_type: klass.name)
           end
+          relation
         end,
         class_name: klass.version_class_name,
         as: :item
