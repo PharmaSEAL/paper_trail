@@ -6,6 +6,12 @@ RSpec.describe Management, type: :model, versioning: true do
   it { is_expected.to be_versioned }
 
   it "utilises the base_class for STI classes having no type column" do
+    # Specific to the store_base_sti_class gem:
+    if ActiveRecord::Base.respond_to?(:store_base_sti_class) &&
+        !ActiveRecord::Base.store_base_sti_class
+      skip("When using store_base_sti_class it is necessary to implement a type column")
+    end
+
     expect(Management.inheritance_column).to eq("type")
     expect(Management.columns.map(&:name)).not_to include("type")
 
