@@ -4,6 +4,10 @@ require "spec_helper"
 
 module Family
   RSpec.describe CelebrityFamily, type: :model, versioning: true do
+    it "should utilise the suffix properly" do
+      expect(PaperTrail::Version.friendly_item_type_from_class(described_class)). to eq("Celebrity Family")
+    end
+
     describe "#reify" do
       context "belongs_to" do
         it "uses the correct item_type in queries" do

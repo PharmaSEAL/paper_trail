@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Elephant < Animal
+  update_paper_trail friendly_name: "Elephant"
 end
 
 # Nice! We used to have `paper_trail.disable` inside the class, which was really

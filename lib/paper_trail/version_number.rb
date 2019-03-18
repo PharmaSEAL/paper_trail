@@ -9,7 +9,7 @@ module PaperTrail
   module VERSION
     MAJOR = 9
     MINOR = 1
-    TINY = 1
+    TINY = 2
 
     # Set PRE to nil unless it's a pre-release (beta, rc, etc.)
     PRE = nil

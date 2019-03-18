@@ -145,6 +145,10 @@ module PaperTrail
       setup_callbacks_from_options options[:on]
     end
 
+    def update(options = {})
+      friendly_name_and_suffix(options)
+    end
+
     def version_class
       @_version_class ||= @model_class.version_class_name.constantize
     end
@@ -208,6 +212,8 @@ module PaperTrail
       @model_class.class_attribute :version_class_name
       @model_class.version_class_name = options[:class_name] || "PaperTrail::Version"
 
+      friendly_name_and_suffix(options)
+
       @model_class.class_attribute :versions_association_name
       @model_class.versions_association_name = options[:versions] || :versions
 
@@ -216,6 +222,17 @@ module PaperTrail
       assert_concrete_activerecord_class(@model_class.version_class_name)
 
       type_aware_has_many(@model_class)
+    end
+
+    def friendly_name_and_suffix(options)
+      @model_class.class_attribute :version_friendly_name
+      @model_class.version_friendly_name = if options.include?(:friendly_name)
+                                             options[:friendly_name]
+                                           else
+                                             -> (klass) { klass.name.split('::').last.titleize }
+                                           end
+      @model_class.class_attribute :version_friendly_suffix
+      @model_class.version_friendly_suffix = options[:friendly_suffix]
     end
 
     def setup_callbacks_from_options(options_on = [])

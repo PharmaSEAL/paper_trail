@@ -44,6 +44,14 @@ RSpec.describe Animal, type: :model, versioning: true do
     expect(dog).to be_instance_of(Dog)
   end
 
+  it "should utilise the suffix properly" do
+    # Because Animal overrides the normal appending of suffix names, this should simply be "Elephant"
+    # instead of "Elephant Animal"
+    expect(PaperTrail::Version.friendly_item_type_from_class(Elephant)). to eq("Elephant")
+    # But Dog has its friendly_name set to nil, so it really does take the friendly name of its parent.
+    expect(PaperTrail::Version.friendly_item_type_from_class(Dog)). to eq("Animal")
+  end
+
   context "with callback-methods" do
     context "when only has_paper_trail set in super class" do
       let(:callback_cat) { Cat.create(name: "Markus") }

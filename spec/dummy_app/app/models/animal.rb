@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Animal < ActiveRecord::Base
-  has_paper_trail
+  # Have Elephant, Cat, and Dog report a friendly name of the same instead of "Dog Animal"
+  has_paper_trail friendly_suffix: ""
   self.inheritance_column = "species"
 end

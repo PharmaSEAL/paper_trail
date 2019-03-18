@@ -35,17 +35,20 @@ has been destroyed.
   # set this variable. This variable may be removed in the future without
   # warning.
   unless ENV["PT_ASSOCIATION_TRACKING"] == "false"
-    s.add_dependency "paper_trail-association_tracking", "< 2"
+    # Going to any newer version of paper_trail-association_tracking on Rails >= 5.2 causes:
+    #   unknown attribute 'foreign_type' for PaperTrail::VersionAssociation
+    s.add_dependency "paper_trail-association_tracking", '= 1.0.0'
   end
 
   s.add_dependency "request_store", "~> 1.1"
 
   s.add_development_dependency "appraisal", "~> 2.2"
-  s.add_development_dependency "byebug", "~> 10.0"
+  s.add_development_dependency "byebug", "~> 11.0"
+  s.add_development_dependency "pry-byebug", "~> 3.7.0"
   s.add_development_dependency "ffaker", "~> 2.8"
   s.add_development_dependency "generator_spec", "~> 0.9.4"
   s.add_development_dependency "mysql2", "~> 0.4.10"
-  s.add_development_dependency "pg", "~> 0.21.0"
+  s.add_development_dependency "pg", "~> 0.18.4"
   s.add_development_dependency "rake", "~> 12.3"
   s.add_development_dependency "rspec-rails", "~> 3.7.2"
   s.add_development_dependency "rubocop", "~> 0.56.0"

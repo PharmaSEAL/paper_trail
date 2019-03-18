@@ -26,6 +26,8 @@ module PaperTrail
       #   to an array of `:create`, `:update`, `:destroy` as desired.
       # - :class_name - The name of a custom Version class.  This class should
       #   inherit from `PaperTrail::Version`.
+      # - :friendly_name, :friendly_suffix - Used when building the friendly name
+      #   returned from `PaperTrail::Version.friendly_item_type`.
       # - :ignore - An array of attributes for which a new `Version` will not be
       #   created if only they change. It can also aceept a Hash as an
       #   argument where the key is the attribute to ignore (a `String` or
@@ -63,6 +65,11 @@ module PaperTrail
       # @api public
       def has_paper_trail(options = {})
         paper_trail.setup(options)
+      end
+
+      # @api public
+      def update_paper_trail(options = {})
+        paper_trail.update(options)
       end
 
       # @api public
