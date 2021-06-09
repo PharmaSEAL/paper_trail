@@ -28,7 +28,7 @@ has been destroyed.
   s.required_ruby_version = ">= 2.3.0"
 
   # Rails does not follow semver, makes breaking changes in minor versions.
-  s.add_dependency "activerecord", [">= 4.2", "< 5.3"]
+  s.add_dependency "activerecord", [">= 4.2", "< 7"]
 
   # This `PT_ASSOCIATION_TRACKING` variable is convenient for the test suite of
   # `paper_trail-association_tracking`. Normal users of paper_trail should not
